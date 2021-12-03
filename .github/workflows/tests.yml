@@ -19,4 +19,4 @@ jobs:
       - name: install deps
         run: poetry install
       - name: run tests
-        run: poetry run pytest tests
+        run: poetry run pytest tests -v
