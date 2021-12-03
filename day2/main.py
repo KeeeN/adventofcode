@@ -25,5 +25,26 @@ def part_1() -> int:
     return x * depth
 
 
+def move_2(x: int, depth: int, aim: int, instruction: str) -> Tuple[int, int]:
+    match instruction.split():
+        case ["forward", value]:
+            x += int(value)
+            depth += int(value) * aim
+        case ["up", value]:
+            aim -= int(value)
+        case ["down", value]:
+            aim += int(value)
+    return x, depth, aim
+
+
+def part_2() -> int:
+    with open(get_local_file_abs_path("input.txt"), "r") as file:
+        x, depth, aim = 0, 0, 0
+        for instruction in file.readlines():
+            x, depth, aim = move_2(x, depth, aim, instruction)
+    return x * depth
+
+
 if __name__ == "__main__":
     print(part_1())
+    print(part_2())
