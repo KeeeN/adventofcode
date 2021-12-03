@@ -17,8 +17,8 @@ def move(x: int, depth: int, instruction: str) -> Tuple[int, int]:
     return x, depth
 
 
-def part_1() -> int:
-    with open(get_local_file_abs_path("input.txt"), "r") as file:
+def part_1(input_path: str) -> int:
+    with open(input_path, "r") as file:
         x, depth = 0, 0
         for instruction in file.readlines():
             x, depth = move(x, depth, instruction)
@@ -37,8 +37,8 @@ def move_2(x: int, depth: int, aim: int, instruction: str) -> Tuple[int, int]:
     return x, depth, aim
 
 
-def part_2() -> int:
-    with open(get_local_file_abs_path("input.txt"), "r") as file:
+def part_2(input_path: str) -> int:
+    with open(input_path, "r") as file:
         x, depth, aim = 0, 0, 0
         for instruction in file.readlines():
             x, depth, aim = move_2(x, depth, aim, instruction)
@@ -46,5 +46,6 @@ def part_2() -> int:
 
 
 if __name__ == "__main__":
-    print(part_1())
-    print(part_2())
+    input_path = get_local_file_abs_path("input.txt")
+    print(part_1(input_path))
+    print(part_2(input_path))
