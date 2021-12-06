@@ -1,7 +1,8 @@
 import os
 
-import day3.main
 import day2.main
+import day3.main
+import day4.main
 import pytest
 
 
@@ -23,7 +24,13 @@ def get_local_file_abs_path(file_name: str) -> str:
             [get_local_file_abs_path("day3_test_input.txt")],
             (198, "10110", "01001"),
             (230, "10111", "01010"),
-        )
+        ),
+        (
+            day4.main,
+            [get_local_file_abs_path("day4_test_input.txt")],
+            (4512),
+            (4512),
+        ),
     ],
 )
 class TestDay:
