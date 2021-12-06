@@ -1,7 +1,7 @@
-from io import FileIO
 import os
+from collections import OrderedDict
+from io import FileIO
 from typing import List, NewType, Optional, Tuple
-
 
 GRID_SIZE = 5
 CHECKED_VAL = -1
@@ -49,24 +49,30 @@ def find_in_board(
     return number * total if bingo else None
 
 
-def find_in_boards(boards: List[Board], number: int) -> Optional[int]:
-    for board in boards:
-        if score := find_in_board(board, number):
-            return score
-    return None
+def find_in_boards(
+    boards: List[Board], number: int, scores: OrderedDict
+) -> Optional[int]:
+    for nb, board in enumerate(boards):
+        if (score := find_in_board(board, number)) and not scores.get(nb):
+            scores[nb] = score
+    return scores
 
 
 def part_1(input_path: str) -> int:
     drawn_numbers, boards = load_bingo(input_path)
+    scores = OrderedDict()
     for number in drawn_numbers:
-        if (score := find_in_boards(boards, number)) is not None:
-            return score
+        if find_in_boards(boards, number, scores):
+            return scores.popitem()[1]
 
 
 def part_2(input_path: str) -> int:
-    with open(input_path, "r") as file:
-        pass
-    return
+    drawn_numbers, boards = load_bingo(input_path)
+    board_count = len(boards)
+    scores = OrderedDict()
+    for number in drawn_numbers:
+        if len(find_in_boards(boards, number, scores)) == board_count:
+            return scores.popitem()[1]
 
 
 if __name__ == "__main__":
