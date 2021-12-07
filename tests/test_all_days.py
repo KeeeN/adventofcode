@@ -5,6 +5,7 @@ import day3.main
 import day4.main
 import day5.main
 import day6.main
+import day7.main
 import pytest
 
 
@@ -44,6 +45,12 @@ def get_local_file_abs_path(file_name: str) -> str:
             [get_local_file_abs_path("day6_test_input.txt"), 256],
             (26984457539),
             (26984457539),
+        ),
+        (
+            day7.main,
+            [get_local_file_abs_path("day7_test_input.txt")],
+            (37),
+            (37),
         ),
     ],
 )
