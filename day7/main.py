@@ -29,7 +29,10 @@ def part_1(input_path: str) -> int:
 
 def part_2(input_path: str) -> int:
     crabes = load_crabes(input_path)
-    fuel_list = [calc_total_fuel(crabes, target_pos) for target_pos in range(min(crabes), max(crabes))]
+    fuel_list = [
+        calc_total_fuel(crabes, target_pos)
+        for target_pos in range(min(crabes), max(crabes))
+    ]
     return min(fuel_list)
 
 
