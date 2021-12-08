@@ -57,7 +57,7 @@ def get_local_file_abs_path(file_name: str) -> str:
             day8.main,
             [get_local_file_abs_path("day8_test_input.txt")],
             (26),
-            (26),
+            (61229),
         ),
     ],
 )
