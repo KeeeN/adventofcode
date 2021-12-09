@@ -12,15 +12,6 @@ def load_crabes(input_path: str) -> List[int]:
         return list(map(int, file.readline().split(",")))
 
 
-def calc_fuel(target_pos: int, pos: int) -> int:
-    dist = abs(pos - target_pos)
-    return int(dist * (dist + 1) // 2)
-
-
-def calc_total_fuel(crabes: List[int], target_pos: int) -> int:
-    return sum(map(lambda pos: calc_fuel(target_pos, pos), crabes))
-
-
 def part_1(input_path: str) -> int:
     crabes = load_crabes(input_path)
     median = int(statistics.median(crabes))
@@ -28,6 +19,13 @@ def part_1(input_path: str) -> int:
 
 
 def part_2(input_path: str) -> int:
+    def calc_fuel(target_pos: int, pos: int) -> int:
+        dist = abs(pos - target_pos)
+        return int(dist * (dist + 1) // 2)
+
+    def calc_total_fuel(crabes: List[int], target_pos: int) -> int:
+        return sum(map(lambda pos: calc_fuel(target_pos, pos), crabes))
+
     crabes = load_crabes(input_path)
     fuel_list = [
         calc_total_fuel(crabes, target_pos)
