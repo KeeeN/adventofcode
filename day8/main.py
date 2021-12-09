@@ -37,9 +37,7 @@ def load_notes(input_path: str) -> List[Note]:
 def part_1(input_path: str) -> int:
     def count_in_note(note: Note, digits) -> int:
         selected_segment_numbers = [SEGMENT_NUMBERS[dig] for dig in digits]
-        return len(
-            list(nb for nb in map(len, note[1]) if nb in selected_segment_numbers)
-        )
+        return len(list(nb for nb in map(len, note[1]) if nb in selected_segment_numbers))
 
     def count_occurences(notes: List[Note], digits: List[int]) -> int:
         return sum(map(lambda note: count_in_note(note, digits), notes))
@@ -85,17 +83,11 @@ def part_2(input_path: str) -> int:
             return "".join(dig.translate(translation))
 
         assert all(mapping[seg] for seg in "abcdefg")
-        translation = note[1][0].maketrans(
-            "".join(mapping.values()), "".join(mapping.keys())
-        )
+        translation = note[1][0].maketrans("".join(mapping.values()), "".join(mapping.keys()))
         return [translate_digit(dig, translation) for dig in note[1]]
 
     def digits_to_int(digits: Digits) -> int:
-        return int(
-            "".join(
-                str(STANDARD_MAPPING.index("".join(sorted(digit)))) for digit in digits
-            )
-        )
+        return int("".join(str(STANDARD_MAPPING.index("".join(sorted(digit)))) for digit in digits))
 
     def translate_note(note: Note) -> int:
         mapping = {seg: "" for seg in "abcdefg"}

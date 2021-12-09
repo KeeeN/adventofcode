@@ -35,7 +35,7 @@ def calc_gamma(line_list: List[str]) -> str:
     return calc_epsilon_gamma(line_list)[1]
 
 
-def part_1(input_path: str) -> int:
+def part_1(input_path: str) -> Tuple[int, str, str]:
     with open(input_path, "r") as file:
         line_list = file.readlines()
         epsilon_str, gamma_str = calc_epsilon_gamma(line_list)
@@ -44,11 +44,11 @@ def part_1(input_path: str) -> int:
     return epsilon_int * gamma_int, epsilon_str, gamma_str
 
 
-def part_2(input_path: str) -> int:
+def part_2(input_path: str) -> Tuple[int, str, str]:
     def filter_numbers_pos(numbers: List[str], mask: str, pos: int) -> List[str]:
         return list(filter(lambda line: line[pos] == mask[pos], numbers))
 
-    def filter_numbers(numbers: List[str], calc_fun: Callable[[list], str]) -> int:
+    def filter_numbers(numbers: List[str], calc_fun: Callable[[list], str]) -> str:
         numbers_ = numbers.copy()
         for pos in range(SIZE):
             numbers_ = filter_numbers_pos(numbers_, calc_fun(numbers_), pos)
@@ -56,10 +56,10 @@ def part_2(input_path: str) -> int:
                 break
         return numbers_[0]
 
-    def calc_oxygen_rating(numbers) -> int:
+    def calc_oxygen_rating(numbers) -> str:
         return filter_numbers(numbers, calc_epsilon)
 
-    def calc_co2_rating(numbers) -> int:
+    def calc_co2_rating(numbers) -> str:
         return filter_numbers(numbers, calc_gamma)
 
     with open(input_path, "r") as file:

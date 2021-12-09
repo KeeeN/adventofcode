@@ -14,8 +14,7 @@ def get_local_file_abs_path(file_name: str) -> str:
 def load_heatmap(input_path: str) -> Heatmap:
     with open(input_path, "r") as file:
         heatmap = [
-            [BIG_VAL] + [int(c) for c in line.strip("\n")] + [BIG_VAL]
-            for line in file.readlines()
+            [BIG_VAL] + [int(c) for c in line.strip("\n")] + [BIG_VAL] for line in file.readlines()
         ]
     height = len(heatmap)
     width = len(heatmap[0]) - 2
@@ -33,17 +32,10 @@ def find_mins(heatmap: Heatmap, width: int, height: int) -> int:
             and heatmap[y][x] < heatmap[y][x + 1]
         )
 
-    return list(
-        (x, y)
-        for y in range(1, height + 1)
-        for x in range(1, width + 1)
-        if is_min(x, y)
-    )
+    return list((x, y) for y in range(1, height + 1) for x in range(1, width + 1) if is_min(x, y))
 
 
-def visit(
-    x: int, y: int, visited: Set[Tuple[int, int]], heatmap: Heatmap
-) -> Set[Tuple[int, int]]:
+def visit(x: int, y: int, visited: Set[Tuple[int, int]], heatmap: Heatmap) -> Set[Tuple[int, int]]:
     visited.add((x, y))
     for i, j in [(x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)]:
         if (i, j) not in visited and heatmap[j][i] < 9:
