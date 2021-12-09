@@ -1,11 +1,11 @@
 import os
 from collections import defaultdict
 from functools import reduce
-from typing import List, NewType, Set, Tuple
+from typing import Any, Set, Tuple
 
-BIG_VAL = 10
+BIG_VAL = 9
 
-Heatmap = NewType("Heatmap", dict)
+Heatmap = dict
 
 
 def get_local_file_abs_path(file_name: str) -> str:
@@ -21,7 +21,7 @@ def load_heatmap(input_path: str) -> Heatmap:
     return heatmap
 
 
-def find_mins(heatmap: Heatmap) -> int:
+def find_mins(heatmap: Heatmap) -> list[tuple[Any, Any]]:
     def is_min(x, y) -> bool:
         return (
             heatmap[x, y] < heatmap[x + 1, y]
