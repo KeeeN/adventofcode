@@ -1,4 +1,5 @@
 import os
+from itertools import permutations
 from typing import Counter, Dict, List
 
 SEGMENT_NUMBERS = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6]
@@ -16,14 +17,33 @@ STANDARD_MAPPING = [
     "abcdfg",
 ]
 
+SEGMENTS = "abcdefg"
 
 Note = List[List[str]]
 Mapping = Dict[str, str]
 Digits = List[str]
 
 
-def part_2(input_path: str) -> int:
-    return 0
+def part_2_slow(input_path: str) -> int:
+    def trans_dig(dig, translation) -> str:
+        return "".join(list(sorted(dig.translate(translation))))
+
+    result = 0
+    with open(input_path, "r") as file:
+        notes = [[digs.split() for digs in line.strip().split("|")] for line in file.readlines()]
+    for all_d, disp_d in notes:
+        for perm in permutations(SEGMENTS):
+            translation = str.maketrans("".join(perm), SEGMENTS)
+            if all(trans_dig(dig, translation) in STANDARD_MAPPING for dig in all_d):
+                result += int(
+                    "".join(
+                        map(
+                            str,
+                            (STANDARD_MAPPING.index(trans_dig(dig, translation)) for dig in disp_d),
+                        )
+                    )
+                )
+    return result
 
 
 def get_local_file_abs_path(file_name: str) -> str:
@@ -50,7 +70,7 @@ def part_1(input_path: str) -> int:
     return count_occurences(notes, [1, 4, 7, 8])
 
 
-def part_2(input_path: str) -> int:
+def part_2_fast(input_path: str) -> int:
     def filter_by_len(list_of_str: List[str], nb_char: int) -> List[str]:
         return list(filter(lambda dig: len(dig) == nb_char, list_of_str))
 
@@ -109,7 +129,16 @@ def part_2(input_path: str) -> int:
     return sum(translate_note(note) for note in notes)
 
 
+def part_2(input_path: str) -> int:
+    return part_2_fast(input_path)
+
+
 if __name__ == "__main__":
+    import timeit
+
     input_path = get_local_file_abs_path("input.txt")
     print(part_1(input_path))
-    print(part_2(input_path))
+    print(part_2_slow(input_path))
+    print(part_2_fast(input_path))
+    print(timeit.timeit("part_2_slow(input_path)", globals=globals(), number=5))
+    print(timeit.timeit("part_2_fast(input_path)", globals=globals(), number=5))
