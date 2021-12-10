@@ -1,5 +1,5 @@
 import os
-from typing import Counter, Dict, List, NewType, Optional
+from typing import Counter, Dict, List
 
 SEGMENT_NUMBERS = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6]
 SEGMENT_OCCURENCE = {"e": 4, "b": 6, "f": 9}
@@ -17,9 +17,13 @@ STANDARD_MAPPING = [
 ]
 
 
-Note = NewType("Note", List[List[str]])
-Mapping = NewType("Mapping", Dict[str, str])
-Digits = NewType("Digits", List[str])
+Note = List[List[str]]
+Mapping = Dict[str, str]
+Digits = List[str]
+
+
+def part_2(input_path: str) -> int:
+    return 0
 
 
 def get_local_file_abs_path(file_name: str) -> str:
@@ -78,8 +82,8 @@ def part_2(input_path: str) -> int:
             if count == SEGMENT_OCCURENCE[char]:
                 mapping[char] = seg
 
-    def translate(note: Note, mapping: Mapping) -> int:
-        def translate_digit(dig: str, translation: dict) -> Digits:
+    def translate(note: Note, mapping: Mapping) -> Digits:
+        def translate_digit(dig: str, translation: dict) -> str:
             return "".join(dig.translate(translation))
 
         assert all(mapping[seg] for seg in "abcdefg")

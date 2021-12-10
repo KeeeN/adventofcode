@@ -1,13 +1,13 @@
 import os
 
-import day2.main
-import day3.main
-import day4.main
-import day5.main
-import day6.main
-import day7.main
-import day8.main
-import day9.main
+import day02.main
+import day03.main
+import day04.main
+import day05.main
+import day06.main
+import day07.main
+import day08.main
+import day09.main
 import day10.main
 import pytest
 
@@ -20,50 +20,50 @@ def get_local_file_abs_path(file_name: str) -> str:
     ("day_module", "args", "expected_1", "expected_2"),
     [
         (
-            day2.main,
-            [get_local_file_abs_path("day2_test_input.txt")],
+            day02.main,
+            [get_local_file_abs_path("day02_test_input.txt")],
             150,
             900,
         ),
         (
-            day3.main,
-            [get_local_file_abs_path("day3_test_input.txt")],
+            day03.main,
+            [get_local_file_abs_path("day03_test_input.txt")],
             (198, "10110", "01001"),
             (230, "10111", "01010"),
         ),
         (
-            day4.main,
-            [get_local_file_abs_path("day4_test_input.txt")],
+            day04.main,
+            [get_local_file_abs_path("day04_test_input.txt")],
             (4512),
             (1924),
         ),
         (
-            day5.main,
-            [get_local_file_abs_path("day5_test_input.txt")],
+            day05.main,
+            [get_local_file_abs_path("day05_test_input.txt")],
             (5),
             (12),
         ),
         (
-            day6.main,
-            [get_local_file_abs_path("day6_test_input.txt"), 256],
+            day06.main,
+            [get_local_file_abs_path("day06_test_input.txt"), 256],
             (26984457539),
             (26984457539),
         ),
         (
-            day7.main,
-            [get_local_file_abs_path("day7_test_input.txt")],
+            day07.main,
+            [get_local_file_abs_path("day07_test_input.txt")],
             (37),
             (168),
         ),
         (
-            day8.main,
-            [get_local_file_abs_path("day8_test_input.txt")],
+            day08.main,
+            [get_local_file_abs_path("day08_test_input.txt")],
             (26),
             (61229),
         ),
         (
-            day9.main,
-            [get_local_file_abs_path("day9_test_input.txt")],
+            day09.main,
+            [get_local_file_abs_path("day09_test_input.txt")],
             (15),
             (1134),
         ),

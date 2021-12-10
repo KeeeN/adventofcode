@@ -1,10 +1,10 @@
 import os
-from typing import List, NewType, Tuple
+from typing import List, Tuple
 
 import numpy as np
 from skimage import draw
 
-Line = NewType("Line", Tuple[int, int, int, int])
+Line = Tuple[int, int, int, int]
 
 
 def get_local_file_abs_path(file_name: str) -> str:
