@@ -1,6 +1,6 @@
 ### [advent of code](https://adventofcode.com/)
-![](https://img.shields.io/badge/day%20📅-10-blue)
-![](https://img.shields.io/badge/stars%20⭐-20-yellow)
+![](https://img.shields.io/badge/day%20📅-15-blue)
+![](https://img.shields.io/badge/stars%20⭐-21-yellow)
 ![](https://img.shields.io/badge/days%20completed-10-red)
 ![](https://github.com/KeeeN/adventofcode/actions/workflows/tests.yml/badge.svg)
 ![](https://github.com/KeeeN/adventofcode/actions/workflows/update_badges.yml/badge.svg)
