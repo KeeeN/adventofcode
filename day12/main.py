@@ -1,78 +1,49 @@
+import copy
+import functools
 import os
-from functools import reduce
-from statistics import median
-
-
-PAIRS = {
-    ")": "(",
-    "]": "[",
-    "}": "{",
-    ">": "<",
-}
-
-SCORES = {
-    ")": 3,
-    "]": 57,
-    "}": 1197,
-    ">": 25137,
-}
-
-SCORES_2 = {
-    "(": 1,
-    "[": 2,
-    "{": 3,
-    "<": 4,
-}
+from collections import namedtuple
+from itertools import permutations
+from typing import DefaultDict
 
 
 def get_local_file_abs_path(file_name: str) -> str:
     return os.path.join(os.path.dirname(__file__), file_name)
 
 
-def load_chunks(input_path: str) -> list[str]:
+def load_cave(input_path: str) -> namedtuple:
+    cave_map = DefaultDict(set)
     with open(input_path, "r") as file:
-        return [line.strip() for line in file.readlines()]
+        for line in file.readlines():
+            a, b = line.strip().split("-")
+            cave_map[a].add(b)
+            cave_map[b].add(a)
+    cave_map = {k: frozenset(v) for k, v in cave_map.items()}
+    CaveMap = namedtuple("CaveMap", cave_map)
+    return CaveMap(**cave_map)
+
+
+@functools.cache
+def visit(cave: str, cave_map: namedtuple, visited: tuple):
+    visited += (cave,)
+    paths = set()
+    if cave == "end":
+        paths.add(",".join(visited))
+        return paths
+    nexts = getattr(cave_map, cave) - set(filter(str.islower, visited))
+    for perm in permutations(nexts):
+        for next_cave in perm:
+            paths |= visit(next_cave, cave_map, copy.copy(visited))
+    return paths
 
 
 def part_1(input_path: str) -> int:
-    chunks = load_chunks(input_path)
-    score = 0
-    for chunk in chunks:
-        opened: list[str] = []
-        for c in chunk:
-            if opened is not None and c in PAIRS.keys():
-                if PAIRS[c] != opened[-1]:
-                    score += SCORES[c]
-                    break
-                else:
-                    opened.pop()
-            else:
-                opened.append(c)
-    return score
+    cave_map = load_cave(input_path)
+    return len(visit("start", cave_map, tuple()))
 
 
 def part_2(input_path: str) -> int:
-    chunks = load_chunks(input_path)
-    scores = []
-    for chunk in chunks:
-        opened: list[str] = []
-        skip_chunk = False
-        for c in chunk:
-            if opened is not None and c in PAIRS.keys():
-                if PAIRS[c] != opened[-1]:
-                    skip_chunk = True
-                    break
-                else:
-                    opened.pop()
-            else:
-                opened.append(c)
-        if skip_chunk:
-            continue
-        if len(opened) > 0:
-            scores.append(
-                reduce(lambda acc, x: acc * 5 + x, (SCORES_2[c] for c in opened[::-1]), 0)
-            )
-    return int(median(scores))
+    cave_map = load_cave(input_path)
+    return len(visit("start", cave_map, tuple()))
 
 
 if __name__ == "__main__":

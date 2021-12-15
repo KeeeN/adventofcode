@@ -84,9 +84,9 @@ def get_local_file_abs_path(file_name: str) -> str:
         ),
         (
             day12.main,
-            [get_local_file_abs_path("day10.txt")],
-            (26397),
-            (288957),
+            [get_local_file_abs_path("day12.txt")],
+            (10),
+            (10),
         ),
         (
             day13.main,
