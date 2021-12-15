@@ -9,6 +9,9 @@ import day07.main
 import day08.main
 import day09.main
 import day10.main
+import day11.main
+import day12.main
+import day13.main
 import pytest
 
 
@@ -21,55 +24,73 @@ def get_local_file_abs_path(file_name: str) -> str:
     [
         (
             day02.main,
-            [get_local_file_abs_path("day02_test_input.txt")],
+            [get_local_file_abs_path("day02.txt")],
             150,
             900,
         ),
         (
             day03.main,
-            [get_local_file_abs_path("day03_test_input.txt")],
+            [get_local_file_abs_path("day03.txt")],
             (198, "10110", "01001"),
             (230, "10111", "01010"),
         ),
         (
             day04.main,
-            [get_local_file_abs_path("day04_test_input.txt")],
+            [get_local_file_abs_path("day04.txt")],
             (4512),
             (1924),
         ),
         (
             day05.main,
-            [get_local_file_abs_path("day05_test_input.txt")],
+            [get_local_file_abs_path("day05.txt")],
             (5),
             (12),
         ),
         (
             day06.main,
-            [get_local_file_abs_path("day06_test_input.txt"), 256],
+            [get_local_file_abs_path("day06.txt"), 256],
             (26984457539),
             (26984457539),
         ),
         (
             day07.main,
-            [get_local_file_abs_path("day07_test_input.txt")],
+            [get_local_file_abs_path("day07.txt")],
             (37),
             (168),
         ),
         (
             day08.main,
-            [get_local_file_abs_path("day08_test_input.txt")],
+            [get_local_file_abs_path("day08.txt")],
             (26),
             (61229),
         ),
         (
             day09.main,
-            [get_local_file_abs_path("day09_test_input.txt")],
+            [get_local_file_abs_path("day09.txt")],
             (15),
             (1134),
         ),
         (
             day10.main,
-            [get_local_file_abs_path("day10_test_input.txt")],
+            [get_local_file_abs_path("day10.txt")],
+            (26397),
+            (288957),
+        ),
+        (
+            day11.main,
+            [get_local_file_abs_path("day11.txt"), 100],
+            (1656),
+            (1656),
+        ),
+        (
+            day12.main,
+            [get_local_file_abs_path("day10.txt")],
+            (26397),
+            (288957),
+        ),
+        (
+            day13.main,
+            [get_local_file_abs_path("day10.txt")],
             (26397),
             (288957),
         ),
