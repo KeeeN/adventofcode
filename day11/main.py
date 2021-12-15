@@ -52,13 +52,14 @@ def part_1(input_path: str, steps: int) -> int:
     return flashes_count
 
 
-def part_2(input_path: str, steps: int) -> int:
+def part_2(input_path: str, steps: int) -> int | None:
     octopuses = load_octopuses(input_path)
-    flashes_count = 0
-    for _ in range(steps):
-        flashes_count += pass_a_step(octopuses)
+    for i in range(10000):
+        if (pass_a_step(octopuses)) == len(octopuses):
+            display_grid(octopuses)
+            return i+1
     display_grid(octopuses)
-    return flashes_count
+    return None
 
 
 if __name__ == "__main__":
