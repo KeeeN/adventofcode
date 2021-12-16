@@ -57,7 +57,7 @@ def part_2(input_path: str, steps: int) -> int | None:
     for i in range(10000):
         if (pass_a_step(octopuses)) == len(octopuses):
             display_grid(octopuses)
-            return i+1
+            return i + 1
     display_grid(octopuses)
     return None
 
