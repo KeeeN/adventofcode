@@ -9,6 +9,7 @@ def get_local_file_abs_path(file_name: str) -> str:
 
 
 def load_sheet(input_path: str) -> tuple[np.ndarray, list[list[str]]]:
+    sheet = np.zeros((1, 1), dtype=int)
     with open(input_path, "r") as file:
         height = 0
         width = 0
@@ -25,7 +26,7 @@ def load_sheet(input_path: str) -> tuple[np.ndarray, list[list[str]]]:
                     width = max(width, x + 1)
                     height = max(height, y + 1)
                     points.append((x, y))
-        sheet = np.zeros((height, width), dtype=int)
+        sheet.resize((height, width))
         for point in points:
             sheet[point[1], point[0]] = 1
     return sheet, folds
