@@ -1,68 +1,75 @@
 import os
-from enum import Enum
+import sys
 
-import numpy as np
+sys.setrecursionlimit(int(1e6))
 
 
 def get_local_file_abs_path(file_name: str) -> str:
     return os.path.join(os.path.dirname(__file__), file_name)
 
 
-def load_sheet(input_path: str) -> tuple[np.ndarray, list[list[str]]]:
-    sheet = np.zeros((1, 1), dtype=int)
+def load_map(input_path: str) -> dict:
     with open(input_path, "r") as file:
-        height = 0
-        width = 0
-        lines = file.readlines()
-        points = []
-        folds = []
-        for line in lines:
-            if stripped := line.strip():
-                if stripped.startswith("fold"):
-                    axis, value = stripped.strip("fold along ").split("=")
-                    folds.append((axis, int(value)))
-                else:
-                    x, y = map(int, stripped.split(","))
-                    width = max(width, x + 1)
-                    height = max(height, y + 1)
-                    points.append((x, y))
-        sheet.resize((height, width))
-        for point in points:
-            sheet[point[1], point[0]] = 1
-    return sheet, folds
+        risk_map = {
+            (x, y): int(v)
+            for y, line in enumerate(file.readlines())
+            for x, v in enumerate(list(line.strip()))
+        }
+    return risk_map
 
 
-class Axis(str, Enum):
-    X = "x"
-    Y = "y"
+ADJ = ((0, 1), (1, 0), (-1, 0), (0, -1))
 
 
-def fold_sheet(sheet: np.ndarray, fold: int, axis: Axis) -> np.ndarray:
-    match axis:
-        case Axis.X:
-            left = sheet[:, :fold]
-            right = sheet[:, fold + 1 :]
-            folded = left | right[:, ::-1]
-        case Axis.Y:
-            top = sheet[:fold, :]
-            bottom = sheet[fold + 1 :, :]
-            folded = top | bottom[::-1, :]
-    return folded
+def next_positions(pos, risk_map) -> set[tuple[int, int]]:
+    return set(
+        (pos[0] + x, pos[1] + y) for x, y in ADJ if (pos[0] + x, pos[1] + y) in risk_map.keys()
+    )
+
+
+def visit(pos, risk_counter, risk_map, final_pos):
+    if pos == final_pos:
+        return
+    for next_pos in next_positions(pos, risk_map):
+        risk_counter[next_pos] = min(risk_counter[next_pos], risk_counter[pos] + risk_map[next_pos])
+        visit(next_pos, risk_counter, risk_map, final_pos)
+
+
+def get_closest(risk_counter, visited) -> tuple[int, int]:
+    not_visited = filter(lambda e: e[0] not in visited, risk_counter.items())
+    return min(not_visited, key=lambda e: e[1])[0]
+
+
+def visit_2(pos, risk_counter, risk_map, final_pos, visited: set = set()):
+    # Dijkstra
+    visited.add(pos)
+    if pos == final_pos:
+        return
+    for next_pos in next_positions(pos, risk_map) - visited:
+        risk_counter[next_pos] = min(risk_counter[next_pos], risk_counter[pos] + risk_map[next_pos])
+    visit_2(get_closest(risk_counter, visited), risk_counter, risk_map, final_pos, visited)
 
 
 def part_1(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    folded = fold_sheet(sheet=sheet, axis=folds[0][0], fold=folds[0][1])
-    return (folded == 1).sum()
+    risk_map = load_map(input_path)
+    pos = (0, 0)
+    final_pos = (
+        max(risk_map.keys(), key=lambda pos: pos[0])[0],
+        max(risk_map.keys(), key=lambda pos: pos[1])[1],
+    )
+    risk_counter = {
+        (x, y): (final_pos[0] + final_pos[1]) * 9
+        for x in range(final_pos[0] + 1)
+        for y in range(final_pos[1] + 1)
+    }
+    risk_counter[pos] = 0
+    visit_2(pos, risk_counter, risk_map, final_pos)
+    return risk_counter[final_pos]
 
 
 def part_2(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    for fold in folds:
-        sheet = fold_sheet(sheet=sheet, axis=fold[0], fold=fold[1])
-    for line in sheet:
-        print("".join(map(lambda e: " " if e == 0 else "X", line)))
-    return 17
+    risk_map = load_map(input_path)
+    return risk_map
 
 
 if __name__ == "__main__":
