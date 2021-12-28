@@ -1,3 +1,4 @@
+import heapq
 import os
 import sys
 
@@ -62,6 +63,33 @@ def visit_2(pos, risk_counter, risk_map, final_pos, max_width, max_height, visit
     )
 
 
+def visit_3(
+    pos,
+    risk_counter,
+    risk_map,
+    final_pos,
+    max_width,
+    max_height,
+    visited: set = None,
+    candidates: list = None,
+):
+    if visited is None:
+        visited = set()
+    if candidates is None:
+        candidates = list()
+    # Dijkstra
+    while candidates or pos == (0, 0):
+        visited.add(pos)
+        if pos == final_pos:
+            return
+        for next_pos in next_positions(pos, risk_map, max_width, max_height) - visited:
+            if (next_risk := risk_counter[pos] + risk_map[next_pos]) < risk_counter[next_pos]:
+                risk_counter[next_pos] = next_risk
+                heapq.heappush(candidates, (next_risk, *next_pos))
+        _, x, y = heapq.heappop(candidates)
+        pos = (x, y)
+
+
 def find_path(risk_map):
     pos = (0, 0)
     width, height = map_size(risk_map)
@@ -70,7 +98,7 @@ def find_path(risk_map):
         (x, y): width * height * 9 for x in range(final_pos[0] + 1) for y in range(final_pos[1] + 1)
     }
     risk_counter[pos] = 0
-    visit_2(pos, risk_counter, risk_map, final_pos, width, height)
+    visit_3(pos, risk_counter, risk_map, final_pos, width, height)
     return risk_counter, final_pos
 
 
