@@ -1,68 +1,79 @@
 import os
-from enum import Enum
-
-import numpy as np
+from functools import reduce
 
 
 def get_local_file_abs_path(file_name: str) -> str:
     return os.path.join(os.path.dirname(__file__), file_name)
 
 
-def load_sheet(input_path: str) -> tuple[np.ndarray, list[list[str]]]:
-    sheet = np.zeros((1, 1), dtype=int)
+def load_message(input_path: str) -> str:
     with open(input_path, "r") as file:
-        height = 0
-        width = 0
-        lines = file.readlines()
-        points = []
-        folds = []
-        for line in lines:
-            if stripped := line.strip():
-                if stripped.startswith("fold"):
-                    axis, value = stripped.strip("fold along ").split("=")
-                    folds.append((axis, int(value)))
-                else:
-                    x, y = map(int, stripped.split(","))
-                    width = max(width, x + 1)
-                    height = max(height, y + 1)
-                    points.append((x, y))
-        sheet.resize((height, width))
-        for point in points:
-            sheet[point[1], point[0]] = 1
-    return sheet, folds
+        return file.readline().strip()
 
 
-class Axis(str, Enum):
-    X = "x"
-    Y = "y"
+def read_packet(binary_message: str) -> tuple[list, str]:
+    packets = []
+    if int(binary_message):
+        version = int(binary_message[:3], base=2)
+        type_id = int(binary_message[3:6], base=2)
+        binary_message = binary_message[6:]
+        print(f"{version=}")
+        print(f"{type_id=}")
+        print(f"{binary_message=}")
+        match type_id:
+            case 4:
+                content = ""
+                while True:
+                    code, data, binary_message = binary_message[0], binary_message[1:5], binary_message[5:]
+                    content += data
+                    if code == "0":
+                        break
+                decoded = int(content, base=2)
+                packets.append((version, type_id, decoded))
+            case _:
+                length_type, binary_message = int(binary_message[0], base=2), binary_message[1:]
+                print(f"{length_type=}", binary_message)
+                match length_type:
+                    case 0:
+                        subpacket_length, binary_message = int(binary_message[0:15], base=2), binary_message[15:]
+                        print(f"{subpacket_length=}", binary_message)
+                        packets.append((version, type_id, subpacket_length))
+                        subpackets = []
+                        starting_len = len(binary_message)
+                        print(f"{len(binary_message)=}")
+                        print(f"{starting_len=}")
+                        print(f"{subpacket_length=}")
+                        while len(binary_message) > (starting_len - subpacket_length):
+                            if binary_message == "000":
+                                breakpoint()
+                            subpacket, binary_message = read_packet(binary_message)
+                            packets.extend(subpacket)
+                    case 1:
+                        packets_to_read, binary_message = int(binary_message[0:11], base=2), binary_message[11:]
+                        print(f"{packets_to_read=}", binary_message)
+                        packets.append((version, type_id, packets_to_read))
+                        subpackets = []
+                        for _ in range(packets_to_read):
+                            subpacket, binary_message = read_packet(binary_message)
+                            packets.extend(subpacket)
 
-
-def fold_sheet(sheet: np.ndarray, fold: int, axis: Axis) -> np.ndarray:
-    match axis:
-        case Axis.X:
-            left = sheet[:, :fold]
-            right = sheet[:, fold + 1 :]
-            folded = left | right[:, ::-1]
-        case Axis.Y:
-            top = sheet[:fold, :]
-            bottom = sheet[fold + 1 :, :]
-            folded = top | bottom[::-1, :]
-    return folded
+    return packets, binary_message
 
 
 def part_1(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    folded = fold_sheet(sheet=sheet, axis=folds[0][0], fold=folds[0][1])
-    return (folded == 1).sum()
+    message = load_message(input_path)
+    # message = "A0016C880162017C3686B18A3D4780"
+    end_length = len(message) * 4
+    hex_as_binary = bin(int(message, base=16))
+    binary_message = hex_as_binary[2:].zfill(end_length)
+    print(binary_message)
+    packets, _ = read_packet(binary_message)
+    print(packets)
+    return reduce(lambda acc, e: e[0] + acc, packets, 0)
 
 
 def part_2(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    for fold in folds:
-        sheet = fold_sheet(sheet=sheet, axis=fold[0], fold=fold[1])
-    for line in sheet:
-        print("".join(map(lambda e: " " if e == 0 else "X", line)))
-    return 17
+    return load_message(input_path)
 
 
 if __name__ == "__main__":
