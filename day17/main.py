@@ -1,68 +1,62 @@
 import os
-from enum import Enum
+import re
 
-import numpy as np
+Target = dict[str, int]
+Vel = tuple[int, int]
+Pos = tuple[int, int]
 
 
 def get_local_file_abs_path(file_name: str) -> str:
     return os.path.join(os.path.dirname(__file__), file_name)
 
 
-def load_sheet(input_path: str) -> tuple[np.ndarray, list[list[str]]]:
-    sheet = np.zeros((1, 1), dtype=int)
-    with open(input_path, "r") as file:
-        height = 0
-        width = 0
-        lines = file.readlines()
-        points = []
-        folds = []
-        for line in lines:
-            if stripped := line.strip():
-                if stripped.startswith("fold"):
-                    axis, value = stripped.strip("fold along ").split("=")
-                    folds.append((axis, int(value)))
-                else:
-                    x, y = map(int, stripped.split(","))
-                    width = max(width, x + 1)
-                    height = max(height, y + 1)
-                    points.append((x, y))
-        sheet.resize((height, width))
-        for point in points:
-            sheet[point[1], point[0]] = 1
-    return sheet, folds
+def load_target(input_path: str) -> Target:
+    line = open(input_path, "r").readline().strip()
+    result = re.search(
+        r"x=(?P<x_min>-?\d+)\.{2}(?P<x_max>-?\d+), y=(?P<y_min>-?\d+)\.{2}(?P<y_max>-?\d+)", line
+    ).groupdict()
+    return {k: int(v) for k, v in result.items()}
 
 
-class Axis(str, Enum):
-    X = "x"
-    Y = "y"
+def move(pos: Pos, vel: Vel) -> tuple[tuple[int, int], tuple[int, int]]:
+    p_x, p_y = pos[0] + vel[0], pos[1] + vel[1]
+    v_x = vel[0] - 1 if vel[0] > 0 else vel[0] + 1 if vel[0] < 0 else 0
+    v_y = vel[1] - 1
+    return (p_x, p_y), (v_x, v_y)
 
 
-def fold_sheet(sheet: np.ndarray, fold: int, axis: Axis) -> np.ndarray:
-    match axis:
-        case Axis.X:
-            left = sheet[:, :fold]
-            right = sheet[:, fold + 1 :]
-            folded = left | right[:, ::-1]
-        case Axis.Y:
-            top = sheet[:fold, :]
-            bottom = sheet[fold + 1 :, :]
-            folded = top | bottom[::-1, :]
-    return folded
+def target_missed(target: Target, pos: Pos) -> bool:
+    return pos[0] > target["x_max"] or pos[1] < target["y_min"]
+
+
+def target_reached(target: Target, pos: Pos) -> bool:
+    return (
+        target["x_min"] <= pos[0] <= target["x_max"]
+        and target["y_min"] <= pos[1] <= target["y_max"]
+    )
+
+
+def launch(pos: Pos, vel: Vel, target: Target) -> tuple[bool, int]:
+    highest = pos[1]
+    while not target_missed(target, pos) and not (reached := target_reached(target, pos)):
+        pos, vel = move(pos, vel)
+        highest = max(highest, pos[1])
+    return reached, highest
 
 
 def part_1(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    folded = fold_sheet(sheet=sheet, axis=folds[0][0], fold=folds[0][1])
-    return (folded == 1).sum()
+    target = load_target(input_path)
+    highests = []
+    for vel_x in range(100):
+        for vel_y in range(-30, 500):
+            reached, highest = launch((0, 0), (vel_x, vel_y), target)
+            if reached:
+                highests.append(highest)
+    return max(highests)
 
 
 def part_2(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    for fold in folds:
-        sheet = fold_sheet(sheet=sheet, axis=fold[0], fold=fold[1])
-    for line in sheet:
-        print("".join(map(lambda e: " " if e == 0 else "X", line)))
-    return 17
+    return load_target(input_path)
 
 
 if __name__ == "__main__":
