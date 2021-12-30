@@ -14,8 +14,10 @@ def load_target(input_path: str) -> Target:
     line = open(input_path, "r").readline().strip()
     result = re.search(
         r"x=(?P<x_min>-?\d+)\.{2}(?P<x_max>-?\d+), y=(?P<y_min>-?\d+)\.{2}(?P<y_max>-?\d+)", line
-    ).groupdict()
-    return {k: int(v) for k, v in result.items()}
+    )
+    if not result:
+        raise Exception("Failed to load target file.")
+    return {k: int(v) for k, v in result.groupdict().items()}
 
 
 def move(pos: Pos, vel: Vel) -> tuple[tuple[int, int], tuple[int, int]]:
@@ -56,7 +58,14 @@ def part_1(input_path: str) -> int:
 
 
 def part_2(input_path: str) -> int:
-    return load_target(input_path)
+    target = load_target(input_path)
+    highests = []
+    for vel_x in range(target["x_max"] * 2):
+        for vel_y in range(target["y_min"] * 2, 500):
+            reached, highest = launch((0, 0), (vel_x, vel_y), target)
+            if reached:
+                highests.append(highest)
+    return len(highests)
 
 
 if __name__ == "__main__":
