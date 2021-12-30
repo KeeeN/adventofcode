@@ -1,68 +1,76 @@
 import os
-from enum import Enum
-
-import numpy as np
+from functools import reduce
+import re
 
 
 def get_local_file_abs_path(file_name: str) -> str:
     return os.path.join(os.path.dirname(__file__), file_name)
 
 
-def load_sheet(input_path: str) -> tuple[np.ndarray, list[list[str]]]:
-    sheet = np.zeros((1, 1), dtype=int)
+def load_operands(input_path: str) -> list[str]:
     with open(input_path, "r") as file:
-        height = 0
-        width = 0
-        lines = file.readlines()
-        points = []
-        folds = []
-        for line in lines:
-            if stripped := line.strip():
-                if stripped.startswith("fold"):
-                    axis, value = stripped.strip("fold along ").split("=")
-                    folds.append((axis, int(value)))
-                else:
-                    x, y = map(int, stripped.split(","))
-                    width = max(width, x + 1)
-                    height = max(height, y + 1)
-                    points.append((x, y))
-        sheet.resize((height, width))
-        for point in points:
-            sheet[point[1], point[0]] = 1
-    return sheet, folds
+        return [line.strip() for line in file.readlines()]
 
 
-class Axis(str, Enum):
-    X = "x"
-    Y = "y"
+def snail_explode(sn: str, start_pos: int) -> str:
+    end_pos = sn.find("]", start_pos) + 1
+    a, b = eval(sn[start_pos:end_pos])
+    part_1 = re.sub(
+        r"\d+", lambda m: str(int(m.group(0)[::-1]) + a)[::-1], sn[:start_pos][::-1], 1
+    )[::-1]
+    part_2 = re.sub(r"\d+", lambda m: str(int(m.group(0)) + b), sn[end_pos:], 1)
+    return part_1 + "0" + part_2
 
 
-def fold_sheet(sheet: np.ndarray, fold: int, axis: Axis) -> np.ndarray:
-    match axis:
-        case Axis.X:
-            left = sheet[:, :fold]
-            right = sheet[:, fold + 1 :]
-            folded = left | right[:, ::-1]
-        case Axis.Y:
-            top = sheet[:fold, :]
-            bottom = sheet[fold + 1 :, :]
-            folded = top | bottom[::-1, :]
-    return folded
+def snail_split(sn: str) -> str:
+    return re.sub(
+        r"\d{2}", lambda m: f"[{int(m.group(0))//2},{int(m.group(0)) - int(m.group(0))//2}]", sn, 1
+    )
+
+
+def snail_reduce(sn: str) -> str:
+    depth = 0
+    for pos, s in enumerate(sn):
+        if s == "[":
+            depth += 1
+            if depth == 5:
+                return snail_explode(sn, pos)
+            continue
+        if s == "]":
+            depth -= 1
+            continue
+    return snail_split(sn)
+
+
+def snail_add(sn_1: str, sn_2: str) -> str | None:
+    if sn_1 is None and sn_2:
+        return sn_2
+    if sn_1 and sn_2 is None:
+        return sn_1
+    if sn_1 is None and sn_2 is None:
+        return None
+    before = None
+    reduced = f"[{sn_1},{sn_2}]"
+    while before != reduced:
+        before, reduced = reduced, snail_reduce(reduced)
+    return reduced
+
+
+def calc_magnitude(sn: list) -> int:
+    a = sn[0] if type(sn[0]) is int else calc_magnitude(sn[0])
+    b = sn[1] if type(sn[1]) is int else calc_magnitude(sn[1])
+    return 3 * a + 2 * b
 
 
 def part_1(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    folded = fold_sheet(sheet=sheet, axis=folds[0][0], fold=folds[0][1])
-    return (folded == 1).sum()
+    operands = load_operands(input_path)
+    sn = reduce(lambda acc, val: snail_add(acc, val), operands, None)
+    sn_list = eval(sn)
+    return calc_magnitude(sn_list)
 
 
 def part_2(input_path: str) -> int:
-    sheet, folds = load_sheet(input_path)
-    for fold in folds:
-        sheet = fold_sheet(sheet=sheet, axis=fold[0], fold=fold[1])
-    for line in sheet:
-        print("".join(map(lambda e: " " if e == 0 else "X", line)))
-    return 17
+    return load_operands(input_path)
 
 
 if __name__ == "__main__":
