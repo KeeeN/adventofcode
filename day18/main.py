@@ -1,6 +1,10 @@
 import os
-from functools import reduce
 import re
+import sys
+from functools import reduce
+from itertools import permutations
+
+sys.setrecursionlimit(int(1e6))
 
 
 def get_local_file_abs_path(file_name: str) -> str:
@@ -70,7 +74,10 @@ def part_1(input_path: str) -> int:
 
 
 def part_2(input_path: str) -> int:
-    return load_operands(input_path)
+    operands = load_operands(input_path)
+    perms = permutations(operands, 2)
+    results = [calc_magnitude(eval(snail_add(a, b))) for a, b in perms]
+    return max(results)
 
 
 if __name__ == "__main__":

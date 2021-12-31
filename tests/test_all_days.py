@@ -127,7 +127,7 @@ def get_local_file_abs_path(file_name: str) -> str:
             day18.main,
             [get_local_file_abs_path("day18.txt")],
             (4140),
-            (112),
+            (3993),
         ),
     ],
 )
