@@ -1,3 +1,4 @@
+from functools import cache
 import heapq
 import os
 import sys
@@ -109,6 +110,7 @@ def map_size(risk_map: dict) -> tuple[int, int]:
     )
 
 
+@cache
 def part_1(input_path: str) -> int:
     risk_map = load_map(input_path)
     risk_counter, final_pos = find_path(risk_map)
@@ -137,6 +139,7 @@ def display_counter(risk_counter, risk_map) -> None:
         print(" ".join(f"{risk_counter[(x, y)]:02}" for x in range(width)))
 
 
+@cache
 def part_2(input_path: str) -> int:
     risk_map = load_map(input_path)
     risk_map = scale_map(risk_map, 5)

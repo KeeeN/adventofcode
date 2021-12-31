@@ -1,7 +1,7 @@
 import os
 import re
 import sys
-from functools import reduce
+from functools import cache, reduce
 from itertools import permutations
 
 sys.setrecursionlimit(int(1e6))
@@ -66,6 +66,7 @@ def calc_magnitude(sn: list) -> int:
     return 3 * a + 2 * b
 
 
+@cache
 def part_1(input_path: str) -> int:
     operands = load_operands(input_path)
     sn = reduce(lambda acc, val: snail_add(acc, val), operands, None)
@@ -73,6 +74,7 @@ def part_1(input_path: str) -> int:
     return calc_magnitude(sn_list)
 
 
+@cache
 def part_2(input_path: str) -> int:
     operands = load_operands(input_path)
     perms = permutations(operands, 2)
@@ -81,6 +83,10 @@ def part_2(input_path: str) -> int:
 
 
 if __name__ == "__main__":
+    import timeit
+
     input_path = get_local_file_abs_path("input.txt")
+    print(timeit.timeit("part_1(input_path)", globals=globals(), number=1))
+    print(timeit.timeit("part_2(input_path)", globals=globals(), number=1))
     print(part_1(input_path))
     print(part_2(input_path))
