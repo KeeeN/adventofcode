@@ -1,5 +1,6 @@
 import os
 
+import day01.main
 import day02.main
 import day03.main
 import day04.main
@@ -27,6 +28,12 @@ def get_local_file_abs_path(file_name: str) -> str:
 @pytest.mark.parametrize(
     ("day_module", "args", "expected_1", "expected_2"),
     [
+        (
+            day01.main,
+            [get_local_file_abs_path("day01.txt")],
+            7,
+            5,
+        ),
         (
             day02.main,
             [get_local_file_abs_path("day02.txt")],

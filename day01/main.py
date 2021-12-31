@@ -5,8 +5,8 @@ def get_local_file_abs_path(file_name: str) -> str:
     return os.path.join(os.path.dirname(__file__), file_name)
 
 
-def part_1() -> int:
-    with open(get_local_file_abs_path("input.txt"), "r") as file:
+def part_1(input_path: str) -> int:
+    with open(input_path, "r") as file:
         larger_count = 0
         prev = None
         for line in file.readlines():
@@ -16,8 +16,8 @@ def part_1() -> int:
     return larger_count
 
 
-def part_2() -> int:
-    with open(get_local_file_abs_path("input.txt"), "r") as file:
+def part_2(input_path: str) -> int:
+    with open(input_path, "r") as file:
         larger_count = 0
         prev_sum = None
         lines_a = file.readlines()
@@ -32,5 +32,6 @@ def part_2() -> int:
 
 
 if __name__ == "__main__":
-    print(part_1())
-    print(part_2())
+    input_path = get_local_file_abs_path("input.txt")
+    print(part_1(input_path))
+    print(part_2(input_path))
